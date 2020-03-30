@@ -5,6 +5,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+
+import ro.pub.cs.systems.eim.lab05.startedserviceactivity.general.Constants;
+
 public class StartedServiceBroadcastReceiver extends BroadcastReceiver {
 
     private TextView messageTextView;
@@ -19,8 +23,34 @@ public class StartedServiceBroadcastReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         // TODO: exercise 7 - get the action and the extra information from the intent
         // and set the text on the messageTextView
+        String action = intent.getAction();
+        String data = null;
+        switch (action) {
+            case Constants.ACTION_STRING:
+                data = intent.getStringExtra(Constants.DATA);
+                break;
+            case Constants.ACTION_INTEGER:
+                int a = 0;
+                intent.getIntExtra(Constants.DATA, a);
+                data = Integer.toString(a);
+                break;
+            case Constants.ACTION_ARRAY_LIST:
+                ArrayList<String> b = new ArrayList();
+                b = intent.getStringArrayListExtra(Constants.DATA);
+                data = b.toString();
+                break;
+
+
+        }
+        if(messageTextView != null) {
+            messageTextView.setText(messageTextView.getText().toString() + "\n"  + data);
+        }
 
         // TODO: exercise 9 - restart the activity through an intent
         // if the messageTextView is not available
+        Intent startedServiceActivityIntent = new Intent(context, StartedServiceActivity.class);
+        startedServiceActivityIntent.putExtra(Constants.MESSAGE, data);
+        startedServiceActivityIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        context.startActivity(startedServiceActivityIntent);
     }
 }
